@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+<!-- Load the crispy tags just like we did for register -->
+{% load crispy_forms_tags %} 
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow border-0 rounded-lg">
+            <div class="card-header bg-success text-white text-center py-3">
+                <h4 class="mb-0 fw-bold">Welcome Back</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <!-- Crispy forms handles the styling automatically -->
+                    {{ form|crispy }}
+                    
+                    <button type="submit" class="btn btn-success w-100 mt-4 py-2 fw-bold">Log In</button>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <small class="text-muted">Don't have an account? <a href="{% url 'register' %}" class="text-success text-decoration-none fw-bold">Register here</a>.</small>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

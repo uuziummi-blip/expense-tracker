@@ -125,3 +125,22 @@ LOGOUT_REDIRECT_URL = "login"
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Email Configuration (Testing Mode)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# Caching Configuration (Local Memory)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "expense-tracker-cache",
+    }
+}
+
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"

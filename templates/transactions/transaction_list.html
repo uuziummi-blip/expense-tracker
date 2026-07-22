@@ -2,53 +2,106 @@
 
 {% block content %}
 <div class="container mt-4">
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-8">
-            <h2 class="fw-bold">All Transactions</h2>
-        </div>
-        <div class="col-md-4 text-md-end">
-            <a href="{% url 'add_transaction' %}" class="btn btn-primary">+ Add New Transaction</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Transaction History</h2>
+        <div>
+            <a href="{% url 'add_transaction' %}" class="btn btn-primary">+ Add Transaction</a>
         </div>
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card shadow-sm">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover table-striped mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">Date</th>
+                            <th>Date</th>
                             <th>Description</th>
                             <th>Category</th>
+                            <th>Type</th>
                             <th>Amount</th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for t in transactions %}
-                        <tr>
-                            <td class="ps-4">{{ t.date }}</td>
-                            <td>{{ t.description|default:"-" }}</td>
-                            <td>
-                                <span class="badge bg-light text-dark border">{{ t.category.name }}</span>
-                            </td>
-                            <td class="fw-bold {% if t.category.type == 'Income' %}text-success{% else %}text-danger{% endif %}">
-                                {% if t.category.type == 'Income' %}+{% else %}-{% endif %} Rs {{ t.amount }}
-                            </td>
-                            <td class="text-center">
-                                <a href="{% url 'edit_transaction' t.pk %}" class="btn btn-sm btn-outline-secondary me-2">Edit</a>
-                                <a href="{% url 'delete_transaction' t.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
-                            </td>
-                        </tr>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>{{ transaction.date|date:"M d, Y" }}</td>
+                                <td>{{ transaction.description|default:"-" }}</td>
+                                <td>{{ transaction.category.name }}</td>
+                                <td>
+                                    {% if transaction.category.type == 'Income' %}
+                                        <span class="badge bg-success">Income</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Expense</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if transaction.category.type == 'Income' %}
+                                        <span class="text-success fw-bold">+ Rs {{ transaction.amount }}</span>
+                                    {% else %}
+                                        <span class="text-danger fw-bold">- Rs {{ transaction.amount }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'edit_transaction' transaction.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    <a href="{% url 'delete_transaction' transaction.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                                </td>
+                            </tr>
                         {% empty %}
-                        <tr>
-                            <td colspan="5" class="text-center text-muted py-4">No transactions found.</td>
-                        </tr>
+                            <tr>
+                                <td colspan="6" class="text-center text-muted py-4">
+                                    No transactions found. Start by adding one!
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <!-- Pagination Controls -->
+    {% if transactions.has_other_pages %}
+    <nav aria-label="Transaction page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            
+            <!-- Previous and First Buttons -->
+            {% if transactions.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transactions.previous_page_number }}">Previous</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">&laquo; First</span></li>
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+
+            <!-- Current Page Indicator -->
+            <li class="page-item active" aria-current="page">
+                <span class="page-link">
+                    Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}
+                </span>
+            </li>
+
+            <!-- Next and Last Buttons -->
+            {% if transactions.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transactions.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ transactions.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+                <li class="page-item disabled"><span class="page-link">Last &raquo;</span></li>
+            {% endif %}
+
+        </ul>
+    </nav>
+    {% endif %}
+
 </div>
 {% endblock %}

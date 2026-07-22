@@ -46,3 +46,14 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.category.name} - Rs {self.amount}"
+
+
+# --- NEW MODEL FOR SIGNALS ---
+class UserBalance(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    total_income = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    total_expense = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
+
+    def __str__(self):
+        return f"{self.user.username}'s Balance"
